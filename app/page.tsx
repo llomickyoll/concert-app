@@ -7,6 +7,8 @@ import { Eye, EyeOff, Music2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ToastProvider, addToast } from "@heroui/toast";
 import { Card, CardBody, CardHeader } from "@heroui/card";
+import { signIn, getSession } from "next-auth/react";
+
 import { isValidEmail } from "@/utils/helper";
 
 export default function Home() {
@@ -53,28 +55,42 @@ export default function Home() {
   const handleLogin = async () => {
     if (!validate()) {
       setIsLoaded(false);
+
       return;
     }
-    addToast({
-      title: "Login successful",
-      description: "You are now logged in",
-      color: "success",
-    });
+
+    const requestData = {
+      email: email,
+      password: password,
+    };
 
     setIsLoaded(true);
-    // const requestData = {
-    //   version: appConfig.version,
-    //   user: userName,
-    //   pass: password,
-    //   redirect: false,
-    // };
-    // const res = await signIn("credentials", requestData);
-    // if (!res?.error || res?.error === "SessionRequired") {
-    //   router.push("/main");
-    // } else {
-    //   toast.error(res?.error);
-    //   setIsLoaded(true);
-    // }
+    const res = await signIn("credentials", {
+      ...requestData,
+      redirect: false,
+    });
+
+    if (!res?.error || res?.error === "SessionRequired") {
+      addToast({
+        title: "Login successful",
+        description: "You are now logged in",
+        color: "success",
+      });
+      const session = await getSession();
+
+      if (session?.user?.isAdmin === true) {
+        router.push("/admin");
+      } else {
+        router.push("/main");
+      }
+    } else {
+      addToast({
+        title: "Login failed",
+        description: res?.error as string,
+        color: "danger",
+      });
+      setIsLoaded(false);
+    }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,13 +125,13 @@ export default function Home() {
           <div className="flex flex-col w-full items-center justify-center gap-4">
             <Input
               className="w-full"
-              isInvalid={emailInvalid}
               errorMessage={emailErrorMsg}
               id="login-email"
-              type="email"
-              placeholder="name@example.com"
+              isInvalid={emailInvalid}
               label="Email"
               labelPlacement="outside-top"
+              placeholder="name@example.com"
+              type="email"
               value={email}
               onChange={handleEmailChange}
             />
@@ -145,9 +161,9 @@ export default function Home() {
             />
             <Button
               className="w-full bg-primary text-white"
-              onPress={handleLogin}
               disabled={isLoaded}
               isLoading={isLoaded}
+              onPress={handleLogin}
             >
               {isLoaded ? "Signing in..." : "Sign In"}
             </Button>
