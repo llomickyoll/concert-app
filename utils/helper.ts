@@ -11,11 +11,22 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email.trim());
 };
 
+export const isValidPassword = (password: string): boolean => {
+  if (!password || typeof password !== "string") {
+    return false;
+  }
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  return passwordRegex.test(password.trim());
+};
+
 export const handleApiResponse = (
   response:
     | { error?: AxiosError<{ message: string }> }
     | AxiosError<{ message: string }>,
-  defaultErrorMessage: string,
+  defaultErrorMessage: string
 ): void => {
   if ("error" in response) {
     if (response.error) {

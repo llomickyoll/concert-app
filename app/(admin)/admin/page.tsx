@@ -15,6 +15,7 @@ import { ConcertCreateRequest, ConcertPublishAll } from "@/types/concert";
 import { CardOverview } from "@/components/admin/cardOverview";
 import ModalConfirm from "@/components/common/modalConfirm";
 import { handleApiResponse } from "@/utils/helper";
+import { CardNoData } from "@/components/common/cardNoData";
 
 const ADMIN_CARD_HEADERS = [
   {
@@ -64,7 +65,7 @@ export default function Admin() {
     if (isError) {
       handleApiResponse(
         error as AxiosError<{ message: string }>,
-        "Failed to fetch concerts",
+        "Failed to fetch concerts"
       );
     }
     setConcerts(response?.data?.concerts || []);
@@ -90,13 +91,13 @@ export default function Admin() {
       setIsLoading(true);
       const { isError, error } = await ConcertsAPI.deleteConcert(
         userId,
-        concert.id,
+        concert.id
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to delete concert",
+          "Failed to delete concert"
         );
         setIsLoading(false);
 
@@ -106,7 +107,7 @@ export default function Admin() {
       onClose();
       void fetchConcerts();
     },
-    [onClose, userId, fetchConcerts],
+    [onClose, userId, fetchConcerts]
   );
 
   const confirmCallBack = useCallback(async () => {
@@ -128,13 +129,13 @@ export default function Admin() {
       const { isError, error } = await ConcertsAPI.publishConcert(
         userId,
         concert.id,
-        concert.isPublished ? "unpublish" : "publish",
+        concert.isPublished ? "unpublish" : "publish"
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to publish concert",
+          "Failed to publish concert"
         );
         setIsLoading(false);
 
@@ -149,7 +150,7 @@ export default function Admin() {
         color: "success",
       });
     },
-    [userId, fetchConcerts, onClose],
+    [userId, fetchConcerts, onClose]
   );
 
   const onCreate = useCallback(
@@ -159,13 +160,13 @@ export default function Admin() {
       setIsLoading(true);
       const { isError, error } = await ConcertsAPI.createConcert(
         userId,
-        requestData,
+        requestData
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to create concert",
+          "Failed to create concert"
         );
         setIsLoading(false);
 
@@ -180,7 +181,7 @@ export default function Admin() {
         color: "success",
       });
     },
-    [userId, fetchConcerts],
+    [userId, fetchConcerts]
   );
 
   const onOrderChange = useCallback(
@@ -192,21 +193,21 @@ export default function Admin() {
           concerts.sort(
             (a, b) =>
               dayjs(a.createdAt).toDate().getTime() -
-              dayjs(b.createdAt).toDate().getTime(),
-          ),
+              dayjs(b.createdAt).toDate().getTime()
+          )
         );
       } else {
         setConcerts(
           concerts.sort(
             (a, b) =>
               dayjs(b.createdAt).toDate().getTime() -
-              dayjs(a.createdAt).toDate().getTime(),
-          ),
+              dayjs(a.createdAt).toDate().getTime()
+          )
         );
       }
       setOrder(value);
     },
-    [concerts],
+    [concerts]
   );
 
   return (
@@ -214,7 +215,7 @@ export default function Admin() {
       <div className="flex flex-row w-full flex-wrap gap-4 justify-center items-center">
         {ADMIN_CARD_HEADERS.map((header, index) => {
           const value = Number(
-            adminCardHeaders[header.valueKey as keyof AdminCardHerder] || 0,
+            adminCardHeaders[header.valueKey as keyof AdminCardHerder] || 0
           );
 
           return (
@@ -274,6 +275,7 @@ export default function Admin() {
                     onPublish={onPublish}
                   />
                 ))}
+                {concerts.length === 0 && <CardNoData />}
               </div>
             </div>
           </Tab>

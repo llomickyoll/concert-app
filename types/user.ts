@@ -16,3 +16,9 @@ export interface User {
   email: string;
   isAdmin: boolean;
 }
+
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  name: string;
+}
