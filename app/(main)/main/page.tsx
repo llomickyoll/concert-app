@@ -194,7 +194,7 @@ export default function Main() {
         isLoading={isLoading}
         isOpen={isOpen}
         title="Are you sure to cancel?"
-        type="delete"
+        type="cancel"
         onClose={onClose}
       />
     </section>

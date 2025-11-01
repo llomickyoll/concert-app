@@ -124,10 +124,10 @@ export const CardCreate = ({ onCreate }: CardCreateProps) => {
       ...requestData,
       capacity: Number(requestData.capacity),
       startDate: dayjs(
-        requestData.dateRange?.start.toDate(getLocalTimeZone())
+        requestData.dateRange?.start.toDate(getLocalTimeZone()),
       ).format("YYYY-MM-DD"),
       endDate: dayjs(
-        requestData.dateRange?.end.toDate(getLocalTimeZone())
+        requestData.dateRange?.end.toDate(getLocalTimeZone()),
       ).format("YYYY-MM-DD"),
     };
 
@@ -154,7 +154,7 @@ export const CardCreate = ({ onCreate }: CardCreateProps) => {
         [name]: "",
       }));
     },
-    []
+    [],
   );
 
   const handleChangeDate = useCallback(
@@ -169,7 +169,7 @@ export const CardCreate = ({ onCreate }: CardCreateProps) => {
         dateRange: "",
       }));
     },
-    []
+    [],
   );
 
   return (

@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { type AuthOptions } from "next-auth";
+import { AxiosError } from "axios";
 
 import { UserAPI } from "@/api/users/user";
 import { User } from "@/types/user";
@@ -14,10 +15,17 @@ const authOptions: AuthOptions = {
           password: (credentials as Record<string, string>)?.password,
         };
 
-        const { response, isError } = await UserAPI.signIn(requestData);
+        const { response, isError, error } = await UserAPI.signIn(requestData);
 
         if (isError) {
-          throw new Error(response?.message as string);
+          // Extract error message from API response
+          const axiosError = error as AxiosError<{ message?: string }>;
+          const errorMessage =
+            axiosError?.response?.data?.message ||
+            axiosError?.message ||
+            "Wrong password";
+
+          throw new Error(errorMessage);
         }
 
         return response?.data as User | null;

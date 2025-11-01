@@ -86,7 +86,7 @@ export default function Home() {
     } else {
       addToast({
         title: "Login failed",
-        description: res?.error as string,
+        description: "Please check your credentials",
         color: "danger",
       });
       setIsLoaded(false);
@@ -107,7 +107,7 @@ export default function Home() {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <ToastProvider placement="top-right" />
+      <ToastProvider placement="top-right" toastProps={{ timeout: 3000 }} />
       <div className="flex items-center justify-center gap-2 mb-8">
         <Music2 className="h-8 w-8 text-primary" />
         <h1 className="text-4xl font-bold">Concert Manager</h1>

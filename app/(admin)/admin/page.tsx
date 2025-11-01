@@ -5,7 +5,8 @@ import { Tabs, Tab } from "@heroui/tabs";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { AxiosError } from "axios";
-import { addToast } from "@heroui/react";
+import { addToast, Select, SelectItem } from "@heroui/react";
+import dayjs from "dayjs";
 
 import { CardAdminHeader } from "@/components/admin/cardHeader";
 import { CardCreate } from "@/components/admin/cardCreate";
@@ -55,6 +56,7 @@ export default function Admin() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedConcert, setSelectedConcert] =
     useState<ConcertPublishAll | null>(null);
+  const [order, setOrder] = useState<string>("asc");
 
   const fetchConcerts = useCallback(async () => {
     const { response, isError, error } = await ConcertsAPI.getConcerts();
@@ -62,7 +64,7 @@ export default function Admin() {
     if (isError) {
       handleApiResponse(
         error as AxiosError<{ message: string }>,
-        "Failed to fetch concerts"
+        "Failed to fetch concerts",
       );
     }
     setConcerts(response?.data?.concerts || []);
@@ -88,13 +90,13 @@ export default function Admin() {
       setIsLoading(true);
       const { isError, error } = await ConcertsAPI.deleteConcert(
         userId,
-        concert.id
+        concert.id,
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to delete concert"
+          "Failed to delete concert",
         );
         setIsLoading(false);
 
@@ -104,7 +106,7 @@ export default function Admin() {
       onClose();
       void fetchConcerts();
     },
-    [onClose, userId, fetchConcerts]
+    [onClose, userId, fetchConcerts],
   );
 
   const confirmCallBack = useCallback(async () => {
@@ -126,13 +128,13 @@ export default function Admin() {
       const { isError, error } = await ConcertsAPI.publishConcert(
         userId,
         concert.id,
-        concert.isPublished ? "unpublish" : "publish"
+        concert.isPublished ? "unpublish" : "publish",
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to publish concert"
+          "Failed to publish concert",
         );
         setIsLoading(false);
 
@@ -147,7 +149,7 @@ export default function Admin() {
         color: "success",
       });
     },
-    [userId, fetchConcerts, onClose]
+    [userId, fetchConcerts, onClose],
   );
 
   const onCreate = useCallback(
@@ -157,13 +159,13 @@ export default function Admin() {
       setIsLoading(true);
       const { isError, error } = await ConcertsAPI.createConcert(
         userId,
-        requestData
+        requestData,
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to create concert"
+          "Failed to create concert",
         );
         setIsLoading(false);
 
@@ -178,7 +180,33 @@ export default function Admin() {
         color: "success",
       });
     },
-    [userId, fetchConcerts]
+    [userId, fetchConcerts],
+  );
+
+  const onOrderChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+
+      if (value === "asc") {
+        setConcerts(
+          concerts.sort(
+            (a, b) =>
+              dayjs(a.createdAt).toDate().getTime() -
+              dayjs(b.createdAt).toDate().getTime(),
+          ),
+        );
+      } else {
+        setConcerts(
+          concerts.sort(
+            (a, b) =>
+              dayjs(b.createdAt).toDate().getTime() -
+              dayjs(a.createdAt).toDate().getTime(),
+          ),
+        );
+      }
+      setOrder(value);
+    },
+    [concerts],
   );
 
   return (
@@ -186,7 +214,7 @@ export default function Admin() {
       <div className="flex flex-row w-full flex-wrap gap-4 justify-center items-center">
         {ADMIN_CARD_HEADERS.map((header, index) => {
           const value = Number(
-            adminCardHeaders[header.valueKey as keyof AdminCardHerder] || 0
+            adminCardHeaders[header.valueKey as keyof AdminCardHerder] || 0,
           );
 
           return (
@@ -216,16 +244,37 @@ export default function Admin() {
         >
           <Tab key="overview" title="Overview">
             <div className="flex flex-col w-full gap-4">
-              {concerts.map((concert, index) => (
-                <CardOverview
-                  key={`card-overview-${concert.id}`}
-                  concert={concert}
-                  index={String(index)}
-                  isLoading={false}
-                  onDelete={onDelete}
-                  onPublish={onPublish}
-                />
-              ))}
+              <div className="flex w-full items-center justify-end gap-4">
+                <Select
+                  className="max-w-xs"
+                  disallowEmptySelection={true}
+                  items={[
+                    { label: "Latest created date", value: "asc" },
+                    { label: "Oldest created date", value: "desc" },
+                  ]}
+                  label="Order by"
+                  labelPlacement="outside-left"
+                  name="order"
+                  selectedKeys={order ? [order] : []}
+                  variant="bordered"
+                  onChange={onOrderChange}
+                >
+                  <SelectItem key="asc">Oldest created date</SelectItem>
+                  <SelectItem key="desc">Latest created date</SelectItem>
+                </Select>
+              </div>
+              <div className="flex flex-col w-full gap-4">
+                {concerts.map((concert, index) => (
+                  <CardOverview
+                    key={`card-overview-${concert.id}`}
+                    concert={concert}
+                    index={String(index)}
+                    isLoading={false}
+                    onDelete={onDelete}
+                    onPublish={onPublish}
+                  />
+                ))}
+              </div>
             </div>
           </Tab>
           <Tab key="Create" title="Create">

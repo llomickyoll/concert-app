@@ -7,6 +7,7 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { CircleX, Info } from "lucide-react";
+import { useCallback } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface Props {
   onClose: () => void;
   confirmCallBack: () => Promise<void>;
   isLoading?: boolean;
-  type: "confirm" | "delete";
+  type: "confirm" | "delete" | "cancel";
 }
 
 export default function ModalConfirm({
@@ -27,6 +28,12 @@ export default function ModalConfirm({
   isLoading = false,
   type = "confirm",
 }: Props): React.ReactElement {
+  const getButtonText = useCallback(() => {
+    if (type === "confirm") return "Yes, Confirm";
+    if (type === "delete") return "Yes, Delete";
+    if (type === "cancel") return "Yes, Cancel";
+  }, [type]);
+
   return (
     <Modal
       hideCloseButton={true}
@@ -59,7 +66,7 @@ export default function ModalConfirm({
             size="lg"
             onPress={() => void confirmCallBack()}
           >
-            {type === "confirm" ? "Yes, Confirm" : "Yes, Delete"}
+            {getButtonText()}
           </Button>
         </ModalFooter>
       </ModalContent>

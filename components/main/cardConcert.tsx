@@ -45,7 +45,8 @@ export const CardConcert = ({
     const endDate = dayjs(concert.endDate);
 
     const isDisabled =
-      seatAvailable <= 0 || today.isBefore(startDate) || today.isAfter(endDate);
+      seatAvailable <= 0 ||
+      ((today.isBefore(startDate) || today.isAfter(endDate)) && !reservation);
 
     return (
       <Button
