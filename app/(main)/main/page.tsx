@@ -43,7 +43,7 @@ export default function Main() {
     } catch (error) {
       handleApiResponse(
         error as AxiosError<{ message: string }>,
-        "Failed to fetch published concerts"
+        "Failed to fetch published concerts",
       );
       setConcerts([]);
     } finally {
@@ -93,13 +93,13 @@ export default function Main() {
       } catch (error) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to reserve concert"
+          "Failed to reserve concert",
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [userId, fetchReservation, fetchPublishedConcerts, validateReserve]
+    [userId, fetchReservation, fetchPublishedConcerts, validateReserve],
   );
 
   const handleButtonAction = useCallback(
@@ -119,13 +119,13 @@ export default function Main() {
       } catch (error) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to reserve concert"
+          "Failed to reserve concert",
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [fetchReservation, fetchPublishedConcerts, userId, handleReserve]
+    [fetchReservation, fetchPublishedConcerts, userId, handleReserve],
   );
 
   const onClose = useCallback(() => {
@@ -139,13 +139,13 @@ export default function Main() {
 
       const { isError, error } = await ReservationAPI.cancelReservation(
         userId,
-        concert.id
+        concert.id,
       );
 
       if (isError) {
         handleApiResponse(
           error as AxiosError<{ message: string }>,
-          "Failed to cancel reservation"
+          "Failed to cancel reservation",
         );
 
         return;
@@ -159,7 +159,7 @@ export default function Main() {
       });
       onClose();
     },
-    [userId, onClose, fetchReservation, fetchPublishedConcerts]
+    [userId, onClose, fetchReservation, fetchPublishedConcerts],
   );
 
   const confirmCallBack = useCallback(async () => {
@@ -173,7 +173,7 @@ export default function Main() {
     <section className="grid grid-cols-1 gap-4 py-8 md:py-10 w-full">
       {concerts.map((concert, index: number) => {
         const reservation = reservations.find(
-          (reservation) => Number(reservation.concertId) === Number(concert.id)
+          (reservation) => Number(reservation.concertId) === Number(concert.id),
         );
 
         return (

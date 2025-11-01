@@ -26,7 +26,7 @@ export const handleApiResponse = (
   response:
     | { error?: AxiosError<{ message: string }> }
     | AxiosError<{ message: string }>,
-  defaultErrorMessage: string
+  defaultErrorMessage: string,
 ): void => {
   if ("error" in response) {
     if (response.error) {

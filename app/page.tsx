@@ -1,14 +1,13 @@
 "use client";
 
 import { Music2 } from "lucide-react";
-
 import { ToastProvider } from "@heroui/toast";
-
-import { CardSignIn } from "@/components/signIn/cardSignIn";
-import { CardSignUp } from "@/components/signIn/cardSignUp";
 import { Tab } from "@heroui/tabs";
 import { Tabs } from "@heroui/tabs";
 import { useState } from "react";
+
+import { CardSignUp } from "@/components/signIn/cardSignUp";
+import { CardSignIn } from "@/components/signIn/cardSignIn";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"signIn" | "signUp">("signIn");
@@ -16,6 +15,7 @@ export default function Home() {
   const handleSignUpSuccess = () => {
     setActiveTab("signIn");
   };
+
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <ToastProvider placement="top-right" toastProps={{ timeout: 3000 }} />
@@ -25,9 +25,9 @@ export default function Home() {
       </div>
       <div className="w-full max-w-md">
         <Tabs
+          fullWidth
           aria-label="Options"
           color="primary"
-          fullWidth
           selectedKey={activeTab}
           onSelectionChange={(key) => setActiveTab(key as "signIn" | "signUp")}
         >

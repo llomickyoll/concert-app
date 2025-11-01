@@ -1,20 +1,20 @@
 "use client";
 
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-
 import { Input } from "@heroui/input";
 import { useCallback, useState } from "react";
-import { SignUpRequest } from "@/types/user";
-import { UserAPI } from "@/api/users/user";
 import { addToast } from "@heroui/toast";
+import { AxiosError } from "axios";
+import { Button } from "@heroui/button";
+import { Eye, EyeOff } from "lucide-react";
+
 import {
   handleApiResponse,
   isValidEmail,
   isValidPassword,
 } from "@/utils/helper";
-import { AxiosError } from "axios";
-import { Button } from "@heroui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { UserAPI } from "@/api/users/user";
+import { SignUpRequest } from "@/types/user";
 import { USER_ID_FOR_SIGN_UP } from "@/constants/signUp";
 
 interface CardSignUpProps {
@@ -74,16 +74,19 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
     setFullNameErrorMsg("");
     if (email.trim() === "") {
       setEmailErrorMsg("Email is required");
+
       return false;
     }
 
     if (!isValidEmail(email)) {
       setEmailErrorMsg("Invalid email address");
+
       return false;
     }
 
     if (password.trim() === "") {
       setPasswordErrorMsg("Password is required");
+
       return false;
     }
 
@@ -91,21 +94,25 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
       setPasswordErrorMsg(
         "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"
       );
+
       return false;
     }
 
     if (confirmPassword.trim() === "") {
       setConfirmPasswordErrorMsg("Confirm password is required");
+
       return false;
     }
 
     if (password !== confirmPassword) {
       setConfirmPasswordErrorMsg("Passwords do not match");
+
       return false;
     }
 
     if (fullName.trim() === "") {
       setFullNameErrorMsg("Full name is required");
+
       return false;
     }
 
@@ -116,7 +123,7 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
     if (!validate()) {
       return;
     }
-
+    setIsLoading(true);
     const requestData: SignUpRequest = {
       email: email,
       password: password,
@@ -133,6 +140,7 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
         error as AxiosError<{ message: string }>,
         "Failed to sign up"
       );
+      setIsLoading(false);
       return;
     }
 
@@ -141,7 +149,7 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
       description: "You are now signed up",
       color: "success",
     });
-
+    setIsLoading(false);
     resetForm();
     onSignUpSuccess();
   };
@@ -160,24 +168,41 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
         <div className="flex flex-col w-full items-center justify-center gap-4">
           <Input
             className="w-full"
+            errorMessage={emailErrorMsg}
+            isInvalid={!!emailErrorMsg}
             label="Email"
             labelPlacement="outside-top"
             placeholder="name@example.com"
             type="email"
             value={email}
             onChange={handleEmailChange}
-            isInvalid={!!emailErrorMsg}
-            errorMessage={emailErrorMsg}
           />
           <Input
             className="w-full"
+            endContent={
+              <button
+                className="focus:outline-none"
+                type="button"
+                onClick={togglePasswordVisibility}
+              >
+                {isPasswordVisible ? (
+                  <EyeOff className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <Eye className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
+            errorMessage={passwordErrorMsg}
+            isInvalid={!!passwordErrorMsg}
             label="Password"
             labelPlacement="outside-top"
             placeholder="Enter password"
             type={isPasswordVisible ? "text" : "password"}
             value={password}
-            isInvalid={!!passwordErrorMsg}
-            errorMessage={passwordErrorMsg}
+            onChange={handlePasswordChange}
+          />
+          <Input
+            className="w-full"
             endContent={
               <button
                 className="focus:outline-none"
@@ -191,41 +216,24 @@ export const CardSignUp = ({ onSignUpSuccess }: CardSignUpProps) => {
                 )}
               </button>
             }
-            onChange={handlePasswordChange}
-          />
-          <Input
-            className="w-full"
+            errorMessage={confirmPasswordErrorMsg}
+            isInvalid={!!confirmPasswordErrorMsg}
             label="Confirm Password"
             labelPlacement="outside-top"
             placeholder="Confirm password"
             type={isPasswordVisible ? "text" : "password"}
             value={confirmPassword}
-            isInvalid={!!confirmPasswordErrorMsg}
-            errorMessage={confirmPasswordErrorMsg}
-            endContent={
-              <button
-                className="focus:outline-none"
-                type="button"
-                onClick={togglePasswordVisibility}
-              >
-                {isPasswordVisible ? (
-                  <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-                ) : (
-                  <Eye className="text-2xl text-default-400 pointer-events-none" />
-                )}
-              </button>
-            }
             onChange={handleConfirmPasswordChange}
           />
           <Input
             className="w-full"
+            errorMessage={fullNameErrorMsg}
+            isInvalid={!!fullNameErrorMsg}
             label="Full Name"
             labelPlacement="outside-top"
             placeholder="Enter full name"
             type="text"
             value={fullName}
-            isInvalid={!!fullNameErrorMsg}
-            errorMessage={fullNameErrorMsg}
             onChange={handleFullNameChange}
           />
         </div>

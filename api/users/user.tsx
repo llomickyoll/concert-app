@@ -3,7 +3,7 @@ import { SignInRequest, SignInResponse, SignUpRequest } from "@/types/user";
 
 export const UserAPI = {
   signIn: async (
-    requestData: SignInRequest
+    requestData: SignInRequest,
   ): Promise<ApiResponse<SignInResponse>> => {
     return apiHandler<SignInRequest, SignInResponse>({
       method: "post",
@@ -14,7 +14,7 @@ export const UserAPI = {
 
   signUp: async (
     userId: number,
-    requestData: SignUpRequest
+    requestData: SignUpRequest,
   ): Promise<ApiResponse<void>> => {
     return apiHandler<SignUpRequest, void>({
       method: "post",

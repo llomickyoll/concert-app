@@ -4,9 +4,10 @@ import { signIn, getSession } from "next-auth/react";
 import { addToast } from "@heroui/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { isValidEmail } from "@/utils/helper";
 import { Button, Card, CardBody, CardHeader, Input } from "@heroui/react";
 import { Eye, EyeOff } from "lucide-react";
+
+import { isValidEmail } from "@/utils/helper";
 
 export const CardSignIn = () => {
   const [isLoaded, setIsLoaded] = useState(false);
